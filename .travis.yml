@@ -1,0 +1,11 @@
+dist: bionic
+
+script:
+  - sudo ./build.sh
+
+addons:
+  apt:
+    packages:
+      - debootstrap
+      - squashfs-tools
+    update: true

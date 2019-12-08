@@ -184,7 +184,6 @@ check_root
 check_command "chroot"
 check_command "debootstrap"
 check_command "mksquashfs"
-check_command "md5sum"
 
 create_build_dir
 
