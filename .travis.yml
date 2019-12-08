@@ -1,12 +1,22 @@
 language: bash
 dist: bionic
 
+env:
+  global:
+  - secure: UFgtSqyyGNAp1GZClmNE0cW37d6uROLQeDwQ9mbOSVuOdBFESOPXLmtZqrzCLseEr8VnqIojASPKHU0/JgFiIJ69j1PLhBomCDez/oguqaxapIHZZ+8inNyfKXxbapfEz2NxG9/EUuRG3BjaDxopBiYzgD8ErqhPSkuLZTbgHacs8KB0DohmEI9RWCXqcObxP8XeTm/CSQcRqw3Z6QuyD+lQ/OKDFbCdgecLrG5roB75Rne2dkkp0yjrGnAy0/YIYm9xzdSVl4PVCo1jA9IXOjg6zt1305FmiPXiu7AgqfwXQcwEibdHXlH+Km9I07JUIYqCl4xLV8JNn8V5QkDFqdqeHrdOZqVp4nA52+UOhp3TBJ0PKqglJoHpSAqJqNyORKgRScBSXwCupC6p77CLAy66jF9Wvo6TN8N3/k8rNeQOTbCviUIUL10wU3ovrkqy3jj58T9kfWQ/t8GoCBtp4bimwOGqz4IRDBXtc14G3ZYVAB4lvAC2jy8L9o/JrtFgU+mV+oJWi8ZqObF+zm6KtBagOMOZ+6yoD+S4BoxRRos1cbXyVYCfTdai3mAmeWd0I6o+90AhRLeVNWLaGhjFAgYayBCWVmcW9U3OBBL10Kp4Zmv/cwimELGUoYcXC/Jpjx7nIhAKzA07slP5TACgH8g9SJL/+bvFQcu5a9tJyek=
+  - secure: WiLeN+Zhc4NQTr4eSyBaDMOgfx1fHPm7hxVAKMRKNeV9enliEBifXvuOYA3wO4AsWfE3NUXp0YJB2hDB7HU32RFP4RVsr0jNbxQ4jHzWLGT5sye8+DFpWQ+Gpj6F7biM1pqN48Mj0GzCrztxFijAYAflc4ag9qnwoAfklDgY2j8jeAGdZ9YnBuO+s5PHSv+E361reEt5KWk7DDAQHsnKF9MyNw3UaHopxRtK3TTLmCO+uOUCIXPjzA+NmhiKrk0LQRCakgkZ4J+xaAbhT8kATrtlYqvYAt+l/mXTAJRG1xL7pLxBHYwo+tzX0eE33SiDdBM3zXUhwfZor+T8HyUxnNtrw4ofA4dsAH6kG13+PDTrCyAn6doEkTwn32DFpTai836lbDveIJ1h2JTgA8NZwskvGWDpvC1NWfgl3ngJVXgaKEa2GG/1OjkW679whvxeluZmU3RMNNqee8WGZN9wFJB/Q0jSoYH2oSJglL1ljR2fjG2Q8e93GMMX4YCvtIJeEPov4pJzaUbeuAaIR/X3n5DbeVMG9KYNTgTl73a2ojqVDOzBffl2ZbpilABdOn5qibr2YR8XHqMa/ER5bJuIIQFi+RnXJGZtvCOcsfj2IqSA+ExT8Nzw8q8PSiVKOYI5/0kXp1VtfXmlFGod+tlkpzTozxEYmRKDJ+aAK5LPepQ=
+
 script:
-  - sudo ./build.sh
+- sudo ./build.sh
+
+deploy:
+  provider: script
+  script: bash deploy.sh
 
 addons:
   apt:
     packages:
-      - debootstrap
-      - squashfs-tools
+    - curl
+    - debootstrap
+    - squashfs-tools
     update: true
