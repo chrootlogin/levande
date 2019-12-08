@@ -60,10 +60,8 @@ create_squashfs() {
 }
 
 configure_grub() {
-  touch "${WORKDIR}/image/liveimage"
-  mkdir -p "${WORKDIR}/image/boot/grub"
 
-  cat <<EOF > "${WORKDIR}/image/boot/grub/grub.cfg"
+  cat <<EOF > "${WORKDIR}/mnt/boot/grub/grub.cfg"
 search --set=root --file /liveimage
 
 insmod all_video
@@ -105,34 +103,37 @@ build_image() {
   mkdir "${WORKDIR}/mnt"
   mount "${dev}p3" "${WORKDIR}/mnt"
 
-  mkdir "${WORKDIR}/mnt/boot" "${WORKDIR}/mnt/boot/grub" "${WORKDIR}/mnt/boot/efi"
-  mount "${dev}p2" "${WORKDIR}/mnt/boot/efi"
-
+  touch "${WORKDIR}/image/liveimage"
   cp -a ${WORKDIR}/image/* "${WORKDIR}/mnt"
 
-  grub-install \
+  mkdir -p "${WORKDIR}/mnt/boot/grub" "${WORKDIR}/chroot/boot/grub" "${WORKDIR}/chroot/boot/efi"
+
+  configure_grub
+
+  mount_devices
+  mount -o bind "${WORKDIR}/mnt/boot/grub" "${WORKDIR}/chroot/boot/grub"
+  mount "${dev}p2" "${WORKDIR}/chroot/boot/efi"
+
+  chroot "${WORKDIR}/chroot" grub-install \
     --target=i386-pc \
-    --locales="" \
-    --fonts="" \
-    --boot-directory="${WORKDIR}/mnt/boot" \
+    --boot-directory="/boot" \
     ${dev}
 
-  grub-install \
+  chroot "${WORKDIR}/chroot" grub-install \
     --target=x86_64-efi \
     --uefi-secure-boot \
     --no-nvram \
     --removable \
-    --efi-directory="${WORKDIR}/mnt/boot/efi" \
-    --boot-directory="${WORKDIR}/mnt/boot" \
-    --locales="" \
-    --fonts="" \
+    --efi-directory="/boot/efi" \
+    --boot-directory="/boot" \
     ${dev}
 
   sleep 5
   sync
 
-  umount "${WORKDIR}/mnt/boot/efi"
-  rmdir "${WORKDIR}/mnt/boot/efi"
+  umount "${WORKDIR}/chroot/boot/efi"
+  umount "${WORKDIR}/chroot/boot/grub"
+  umount_devices
 
   umount "${WORKDIR}/mnt"
   rmdir "${WORKDIR}/mnt"
@@ -192,13 +193,9 @@ run_debootstrap
 trap 'umount_devices' SIGTERM SIGINT SIGQUIT SIGTSTP
 mount_devices
 
-#find "${SCRIPT_DIR}/build-scripts" -type f -name "*.sh" -exec run_buildscript {} \;
-
 for file in ${SCRIPT_DIR}/build-scripts/*.sh; do
   run_buildscript $file
 done
-
-#chroot "${WORKDIR}/chroot" /bin/bash -x < build-chroot.sh || error "Failure building chroot env"
 
 umount_devices
 trap - SIGTERM SIGINT SIGQUIT SIGTSTP
@@ -207,6 +204,5 @@ cp ${WORKDIR}/chroot/boot/vmlinuz-*-generic "${WORKDIR}/image/vmlinuz" || error 
 cp ${WORKDIR}/chroot/boot/initrd.img-*-generic "${WORKDIR}/image/initrd" || error "Couldn't copy initrd"
 
 create_squashfs
-configure_grub
 
 build_image

@@ -8,8 +8,8 @@ EOF
 
 set_preseed() {
   cat <<EOF > /tmp/preseed.txt
+  grub-pc                grub-pc/install_devices_empty      boolean     true
   grub-pc                grub2/update_nvram                 boolean     false
-  grub-pc                grub-pc/install_devices            seen
 
   keyboard-configuration keyboard-configuration/modelcode   select      pc105
   keyboard-configuration keyboard-configuration/layoutcode  select      ch
@@ -50,11 +50,17 @@ apt-get -y install \
   net-tools \
   wireless-tools \
   locales \
-  ${KERNEL} \
+  ${KERNEL}
+
+apt-get -y install \
   plymouth-theme-ubuntu-logo \
   ubuntu-gnome-desktop \
-  ubuntu-gnome-wallpapers \
-  nano
+  ubuntu-gnome-wallpapers
+
+apt-get -y install \
+  grub-pc-bin \
+  grub-efi-amd64-bin \
+  grub2-common
 
 apt-get -y purge \
   gnome-mahjongg \
